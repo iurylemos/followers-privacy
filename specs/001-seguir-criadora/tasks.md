@@ -12,19 +12,19 @@
 
 **Objetivo**: Preparar os workspaces, a toolchain e as convenções visuais antes das funcionalidades.
 
-- [ ] T001 Criar o workspace npm da raiz e os scripts comuns em `package.json` e `package-lock.json`
-- [ ] T002 Configurar os workspaces `backend` e `frontend`, TypeScript estrito e runners de teste em `backend/package.json`, `backend/tsconfig.json`, `backend/vitest.config.ts`, `frontend/package.json`, `frontend/tsconfig.json` e `frontend/vite.config.ts`
-- [ ] T003 [P] Definir tokens, tipografia, componentes e regras mobile-first antes de implementar a interface em `design-system.md`
+- [X] T001 Criar o workspace npm da raiz e os scripts comuns em `package.json` e `package-lock.json`
+- [X] T002 Configurar os workspaces `backend` e `frontend`, TypeScript estrito e runners de teste em `backend/package.json`, `backend/tsconfig.json`, `backend/vitest.config.ts`, `frontend/package.json`, `frontend/tsconfig.json` e `frontend/vite.config.ts`
+- [X] T003 [P] Definir tokens, tipografia, componentes e regras mobile-first antes de implementar a interface em `design-system.md`
 
 ## Phase 2: Foundational
 
 **Objetivo**: Implementar os pré-requisitos compartilhados que bloqueiam todas as histórias.
 
-- [ ] T004 [P] Escrever testes para IDs, criadora configurada e variáveis de ambiente em `backend/tests/unit/followers.schema.test.ts`
-- [ ] T005 [P] Escrever testes para migração, inicialização repetível e banco SQLite isolado em `backend/tests/integration/sqlite-followers.repository.test.ts`
-- [ ] T006 Implementar configuração de ambiente e validação compartilhada de identificadores, incluindo `creator-1` e `^[A-Za-z0-9_-]{1,64}$`, em `backend/src/config/env.ts`, `backend/src/presentation/http/schemas/followers.schema.ts` e `.env.example`
-- [ ] T007 Implementar conexão SQLite e migração versionada da tabela `creator_followers`, com chave primária `(creator_id, user_id)` e `created_at` UTC, em `backend/src/infrastructure/persistence/database.connection.ts` e `backend/src/infrastructure/persistence/migrations/001-create-followers.sql`
-- [ ] T008 Configurar tratamento central de erros sem stack trace, composição Express e inicialização do servidor em `backend/src/presentation/http/middleware/error-handler.middleware.ts`, `backend/src/app.ts` e `backend/src/server.ts`
+- [X] T004 [P] Escrever testes para IDs, criadora configurada e variáveis de ambiente em `backend/tests/unit/followers.schema.test.ts`
+- [X] T005 [P] Escrever testes para migração, inicialização repetível e banco SQLite isolado em `backend/tests/integration/sqlite-followers.repository.test.ts`
+- [X] T006 Implementar configuração de ambiente e validação compartilhada de identificadores, incluindo `creator-1` e `^[A-Za-z0-9_-]{1,64}$`, em `backend/src/config/env.ts`, `backend/src/presentation/http/schemas/followers.schema.ts` e `.env.example`
+- [X] T007 Implementar conexão SQLite e migração versionada da tabela `creator_followers`, com chave primária `(creator_id, user_id)` e `created_at` UTC, em `backend/src/infrastructure/persistence/database.connection.ts` e `backend/src/infrastructure/persistence/migrations/001-create-followers.sql`
+- [X] T008 Configurar tratamento central de erros sem stack trace, composição Express e inicialização do servidor em `backend/src/presentation/http/middleware/error-handler.middleware.ts`, `backend/src/app.ts` e `backend/src/server.ts`
 
 **Checkpoint**: Workspaces, validação comum, persistência inicial e composição da aplicação prontos.
 
@@ -36,17 +36,17 @@
 
 ### Tests for User Story 1
 
-- [ ] T009 [P] [US1] Escrever testes unitários para criação, remoção, repetição e remoção inexistente antes da implementação em `backend/tests/unit/followers.service.test.ts`
-- [ ] T010 [P] [US1] Escrever testes de integração SQLite para chave composta, persistência e operações idempotentes em `backend/tests/integration/sqlite-followers.repository.test.ts`
-- [ ] T011 [P] [US1] Escrever testes de contrato HTTP para `POST /creators/{creatorId}/followers` e `DELETE /creators/{creatorId}/followers/{userId}`, incluindo status e formato de resposta, em `backend/tests/contract/followers.api.test.ts`
-- [ ] T012 [P] [US1] Escrever teste da interação de seguir/deixar de seguir, verificando que a interface só muda após confirmação da API, em `frontend/src/pages/FollowersPage/index.test.tsx`
+- [X] T009 [P] [US1] Escrever testes unitários para criação, remoção, repetição e remoção inexistente antes da implementação em `backend/tests/unit/followers.service.test.ts`
+- [X] T010 [P] [US1] Escrever testes de integração SQLite para chave composta, persistência e operações idempotentes em `backend/tests/integration/sqlite-followers.repository.test.ts`
+- [X] T011 [P] [US1] Escrever testes de contrato HTTP para `POST /creators/{creatorId}/followers` e `DELETE /creators/{creatorId}/followers/{userId}`, incluindo status e formato de resposta, em `backend/tests/contract/followers.api.test.ts`
+- [X] T012 [P] [US1] Escrever teste da interação de seguir/deixar de seguir, verificando que a interface só muda após confirmação da API, em `frontend/src/pages/FollowersPage/index.test.tsx`
 
 ### Implementation for User Story 1
 
-- [ ] T013 [US1] Definir o contrato do repositório e implementar inserção sem duplicidade e remoção idempotente com SQL parametrizado em `backend/src/domain/repositories/followers.repository.ts` e `backend/src/infrastructure/persistence/sqlite/sqlite-followers.repository.ts`
-- [ ] T014 [US1] Implementar os casos de uso de seguir e deixar de seguir, retornando estado final e contagem persistida em `backend/src/application/services/followers.service.ts`
-- [ ] T015 [US1] Implementar controller e rotas POST/DELETE conforme os status e schemas de `contracts/openapi.yaml` em `backend/src/presentation/http/controllers/followers.controller.ts` e `backend/src/presentation/http/routes/followers.routes.ts`
-- [ ] T016 [US1] Implementar chamadas HTTP e fluxo de seguir/deixar de seguir na página, aguardando resposta confirmada antes de atualizar o estado em `frontend/src/services/followers.service.ts`, `frontend/src/hooks/use-followers.ts` e `frontend/src/pages/FollowersPage/index.tsx`
+- [X] T013 [US1] Definir o contrato do repositório e implementar inserção sem duplicidade e remoção idempotente com SQL parametrizado em `backend/src/domain/repositories/followers.repository.ts` e `backend/src/infrastructure/persistence/sqlite/sqlite-followers.repository.ts`
+- [X] T014 [US1] Implementar os casos de uso de seguir e deixar de seguir, retornando estado final e contagem persistida em `backend/src/application/services/followers.service.ts`
+- [X] T015 [US1] Implementar controller e rotas POST/DELETE conforme os status e schemas de `contracts/openapi.yaml` em `backend/src/presentation/http/controllers/followers.controller.ts` e `backend/src/presentation/http/routes/followers.routes.ts`
+- [X] T016 [US1] Implementar chamadas HTTP e fluxo de seguir/deixar de seguir na página, aguardando resposta confirmada antes de atualizar o estado em `frontend/src/services/followers.service.ts`, `frontend/src/hooks/use-followers.ts` e `frontend/src/pages/FollowersPage/index.tsx`
 
 **Checkpoint**: Validar isoladamente a criação, repetição e remoção de relações no backend e no fluxo principal da interface.
 

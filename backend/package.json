@@ -1,0 +1,28 @@
+{
+  "name": "@followers-privacy/backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "dev": "node --watch --env-file-if-exists=../.env --import tsx src/server.ts",
+    "start": "node --env-file-if-exists=../.env --import tsx src/server.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "better-sqlite3": "^13.0.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/supertest": "^6.0.3",
+    "supertest": "^7.1.4",
+    "tsx": "^4.20.6",
+    "vitest": "^5.0.0"
+  }
+}

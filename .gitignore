@@ -1,3 +1,24 @@
 # Local agent credentials and private artifacts
 .github/agents/**/.env
 .github/agents/**/.env.*
+
+# Node.js and TypeScript workspaces
+node_modules/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+*.log
+.env
+.env.*
+!.env.example
+
+# Local application data
+data/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+
+# Tool caches
+.vite/
+.eslintcache
