@@ -48,8 +48,6 @@ deverão atualizar este arquivo e os contratos afetados.
 - Criação do arquivo de tasks separado pro histórias (Para cada janela de contexto)
 - Uso de classes em vez de funções
 - Nomeclatura por arquivo: `backend/src/domain/repositories/followers.repository.ts`
-
-- Como o enunciado não define a persistência, escolhi SQLite local para evitar um serviço externo.
 - Limitei a demonstração a uma criadora fixa (`creator-1`) e tratei `userId` como identificador
   fornecido pelo cliente, não como autenticação ou autorização.
 - Tornei seguir e deixar de seguir idempotentes para que repetir uma operação não duplique nem
@@ -60,3 +58,10 @@ deverão atualizar este arquivo e os contratos afetados.
 - Não validei a aplicação em produção, em outros sistemas operacionais ou em outros navegadores.
 - Não realizei testes de carga nem uma auditoria de segurança; a aplicação permanece demonstrativa
   e não implementa autenticação ou autorização.
+- Boas práticas de SEO, SSR no Frontend
+- Não implementei o Cache (Redis) nos endpoints
+- Não implementei o Cache no Frontend (React Query)
+- Uso de constantes no Frontend (INTL para projetos com idiomas diferentes)
+- Uso do Husky para a cada commit fazer as validações de Lint, Test, Build.
+- Criação do workflow no github para validações (Lint,Test,Build,Deploy)
+- Uso do Swagger para documentação da API
