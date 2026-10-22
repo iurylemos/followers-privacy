@@ -11,3 +11,7 @@ export interface FollowersActions {
   getFollowerCount(creatorId: string): Promise<number>;
   getFollowing(creatorId: string, userId: string): Promise<boolean>;
 }
+
+export type FollowingResult = { following: boolean };
+
+export type FollowersCount = { creatorId: string; count: number };

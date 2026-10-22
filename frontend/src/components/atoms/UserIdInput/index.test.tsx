@@ -27,4 +27,14 @@ describe("UserIdInput", () => {
       "Use de 1 a 64 letras, números, hífen ou sublinhado.",
     );
   });
+
+  it("uses a pattern valid under the modern regular expression syntax", () => {
+    render(<UserIdInput value="" onChange={vi.fn()} />);
+
+    const input = screen.getByRole("textbox", { name: "Seu identificador" });
+    const pattern = new RegExp(`^(?:${input.getAttribute("pattern")})$`, "v");
+
+    expect(pattern.test("reader-42")).toBe(true);
+    expect(pattern.test("reader id")).toBe(false);
+  });
 });

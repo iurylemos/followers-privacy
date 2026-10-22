@@ -98,7 +98,10 @@ describe("followers HTTP contract", () => {
     );
 
     expect(emptyResponse.status).toBe(200);
-    expect(emptyResponse.body).toEqual({ followerCount: 0 });
+    expect(emptyResponse.body).toEqual({
+      creatorId: "creator-1",
+      count: 0,
+    });
 
     await request(app)
       .post("/creators/creator-1/followers")
@@ -112,7 +115,10 @@ describe("followers HTTP contract", () => {
     );
 
     expect(populatedResponse.status).toBe(200);
-    expect(populatedResponse.body).toEqual({ followerCount: 2 });
+    expect(populatedResponse.body).toEqual({
+      creatorId: "creator-1",
+      count: 2,
+    });
   });
 
   it("returns the persisted follow state for a user", async () => {

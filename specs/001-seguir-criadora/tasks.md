@@ -93,10 +93,11 @@
 
 **Objetivo**: Documentar e validar o uso integrado sem expandir o escopo de uma página e uma criadora demonstrativa.
 
-- [ ] T028 [P] Documentar pré-requisitos, workspaces, configuração local e comandos de execução/teste em `README.md`
-- [ ] T029 [P] Atualizar decisões e limites do desafio, incluindo que `userId` não autentica nem autoriza, em `PROMPTS.md`
-- [ ] T030 [P] Ajustar os passos e resultados esperados do fluxo completo para refletir API, frontend e comandos reais em `specs/001-seguir-criadora/quickstart.md`
-- [ ] T031 Executar os testes automatizados de backend e frontend e percorrer os cenários do quickstart, incluindo recarga e viewport móvel, conforme `specs/001-seguir-criadora/quickstart.md`
+- [X] T028 [P] Documentar pré-requisitos, workspaces, configuração local e comandos de execução/teste em `README.md`
+- [X] T029 [P] Atualizar decisões e limites do desafio, incluindo que `userId` não autentica nem autoriza, em `PROMPTS.md`
+- [X] T030 [P] Ajustar os passos e resultados esperados do fluxo completo para refletir API, frontend e comandos reais em `specs/001-seguir-criadora/quickstart.md`
+- [X] T031 Executar os testes automatizados de backend e frontend e percorrer os cenários do quickstart, incluindo recarga e viewport móvel, conforme `specs/001-seguir-criadora/quickstart.md`
+- [X] T032 Alinhar a resposta de contagem ao enunciado (`creatorId` e `count`) no backend, frontend, testes, contrato e documentação.
 
 ## Dependencies & Execution Order
 
