@@ -92,6 +92,67 @@ describe("followers HTTP contract", () => {
     expect(validResponse.body.followerCount).toBe(1);
   });
 
+  it("returns zero and the persisted follower count", async () => {
+    const emptyResponse = await request(app).get(
+      "/creators/creator-1/followers/count",
+    );
+
+    expect(emptyResponse.status).toBe(200);
+    expect(emptyResponse.body).toEqual({ followerCount: 0 });
+
+    await request(app)
+      .post("/creators/creator-1/followers")
+      .send({ userId: "reader-1" });
+    await request(app)
+      .post("/creators/creator-1/followers")
+      .send({ userId: "reader-2" });
+
+    const populatedResponse = await request(app).get(
+      "/creators/creator-1/followers/count",
+    );
+
+    expect(populatedResponse.status).toBe(200);
+    expect(populatedResponse.body).toEqual({ followerCount: 2 });
+  });
+
+  it("returns the persisted follow state for a user", async () => {
+    const absentResponse = await request(app).get(
+      "/creators/creator-1/followers/reader-1",
+    );
+
+    expect(absentResponse.status).toBe(200);
+    expect(absentResponse.body).toEqual({ following: false });
+
+    await request(app)
+      .post("/creators/creator-1/followers")
+      .send({ userId: "reader-1" });
+
+    const followingResponse = await request(app).get(
+      "/creators/creator-1/followers/reader-1",
+    );
+
+    expect(followingResponse.status).toBe(200);
+    expect(followingResponse.body).toEqual({ following: true });
+  });
+
+  it("rejects invalid IDs for follower queries", async () => {
+    const invalidCreatorResponse = await request(app).get(
+      "/creators/creator!/followers/count",
+    );
+    const invalidUserResponse = await request(app).get(
+      "/creators/creator-1/followers/invalid%20user",
+    );
+
+    expect(invalidCreatorResponse.status).toBe(400);
+    expect(invalidCreatorResponse.body).toMatchObject({
+      code: "INVALID_REQUEST",
+    });
+    expect(invalidUserResponse.status).toBe(400);
+    expect(invalidUserResponse.body).toMatchObject({
+      code: "INVALID_REQUEST",
+    });
+  });
+
   it("rejects malformed JSON with a client error", async () => {
     const response = await request(app)
       .post("/creators/creator-1/followers")

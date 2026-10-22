@@ -11,6 +11,14 @@ export class FollowersRoutes {
       "/:creatorId/followers",
       this.controller.follow.bind(this.controller),
     );
+    router.get(
+      "/:creatorId/followers/count",
+      this.controller.getFollowerCount.bind(this.controller),
+    );
+    router.get(
+      "/:creatorId/followers/:userId",
+      this.controller.getFollowing.bind(this.controller),
+    );
     router.delete(
       "/:creatorId/followers/:userId",
       this.controller.unfollow.bind(this.controller),

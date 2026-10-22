@@ -6,6 +6,7 @@ import type {
 } from "../../../domain/repositories/followers.repository";
 
 type FollowerCountRow = Readonly<{ follower_count: number }>;
+type FollowStateRow = Readonly<{ is_following: number }>;
 
 export class SQLiteFollowersRepository implements FollowersRepository {
   private readonly insertStatement: Statement<
@@ -19,6 +20,10 @@ export class SQLiteFollowersRepository implements FollowersRepository {
   private readonly countStatement: Statement<
     [creatorId: string],
     FollowerCountRow
+  >;
+  private readonly followStateStatement: Statement<
+    [creatorId: string, userId: string],
+    FollowStateRow
   >;
   private readonly followTransaction: (
     creatorId: string,
@@ -53,6 +58,15 @@ export class SQLiteFollowersRepository implements FollowersRepository {
        FROM creator_followers
        WHERE creator_id = ?`,
     );
+    this.followStateStatement = database.prepare<
+      [creatorId: string, userId: string],
+      FollowStateRow
+    >(
+      `SELECT 1 AS is_following
+       FROM creator_followers
+       WHERE creator_id = ? AND user_id = ?
+       LIMIT 1`,
+    );
 
     this.followTransaction = database.transaction((creatorId, userId) => {
       const insertion = this.insertStatement.run(creatorId, userId);
@@ -80,6 +94,14 @@ export class SQLiteFollowersRepository implements FollowersRepository {
 
   public unfollow(creatorId: string, userId: string): UnfollowMutation {
     return this.unfollowTransaction(creatorId, userId);
+  }
+
+  public getFollowerCount(creatorId: string): number {
+    return this.readFollowerCount(creatorId);
+  }
+
+  public getFollowing(creatorId: string, userId: string): boolean {
+    return this.followStateStatement.get(creatorId, userId) !== undefined;
   }
 
   private readFollowerCount(creatorId: string): number {

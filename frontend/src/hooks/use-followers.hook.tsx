@@ -1,4 +1,4 @@
-import { useState, type SubmitEvent } from "react";
+import { useEffect, useRef, useState, type SubmitEvent } from "react";
 import type {
   FollowersActions,
   FollowersStatusKind,
@@ -26,11 +26,70 @@ export function useFollowers(
   const [isPending, setIsPending] = useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<string>("");
   const [statusKind, setStatusKind] = useState<FollowersStatusKind>("idle");
+  const countRequestVersion = useRef<number>(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    const requestVersion = countRequestVersion.current;
+
+    void service
+      .getFollowerCount(creatorId)
+      .then((count) => {
+        if (!cancelled && countRequestVersion.current === requestVersion) {
+          setFollowerCount(count);
+        }
+      })
+      .catch((error: unknown) => {
+        if (cancelled || countRequestVersion.current !== requestVersion) {
+          return;
+        }
+        setStatusKind("error");
+        setStatusMessage(
+          error instanceof Error && error.message.length > 0
+            ? error.message
+            : "Não foi possível consultar a quantidade de seguidores.",
+        );
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [creatorId, service]);
+
+  useEffect(() => {
+    if (!/^[A-Za-z0-9_-]{1,64}$/.test(userId)) {
+      return;
+    }
+
+    let cancelled = false;
+
+    void service
+      .getFollowing(creatorId, userId)
+      .then((isFollowing) => {
+        if (!cancelled) {
+          setFollowing(isFollowing);
+        }
+      })
+      .catch((error: unknown) => {
+        if (cancelled) {
+          return;
+        }
+        setStatusKind("error");
+        setStatusMessage(
+          error instanceof Error && error.message.length > 0
+            ? error.message
+            : "Não foi possível consultar o estado do seguimento.",
+        );
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [creatorId, service, userId]);
 
   const updateUserId = (value: string): void => {
     setUserId(value);
     setFollowing(false);
-    setFollowerCount(null);
     setStatusMessage("");
     setStatusKind("idle");
   };
@@ -56,6 +115,7 @@ export function useFollowers(
         throw new Error("A API não confirmou o estado solicitado.");
       }
 
+      countRequestVersion.current += 1;
       setFollowing(result.following);
       setFollowerCount(result.followerCount);
       setStatusKind("success");

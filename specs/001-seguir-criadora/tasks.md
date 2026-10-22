@@ -58,14 +58,14 @@
 
 ### Tests for User Story 2
 
-- [ ] T017 [US2] Escrever testes de contrato para `GET /creators/{creatorId}/followers/count` e `GET /creators/{creatorId}/followers/{userId}`, incluindo contagem zero e identificadores inválidos, em `backend/tests/contract/followers.api.test.ts`
-- [ ] T018 [US2] Escrever testes da interface para carregamento inicial, atualização da contagem e troca de identificador com estado recuperado da API em `frontend/src/pages/FollowersPage/index.test.tsx`
+- [X] T017 [US2] Escrever testes de contrato para `GET /creators/{creatorId}/followers/count` e `GET /creators/{creatorId}/followers/{userId}`, incluindo contagem zero e identificadores inválidos, em `backend/tests/contract/followers.api.test.ts`
+- [X] T018 [US2] Escrever testes da interface para carregamento inicial, atualização da contagem e troca de identificador com estado recuperado da API em `frontend/src/pages/FollowersPage/index.test.tsx`
 
 ### Implementation for User Story 2
 
-- [ ] T019 [US2] Implementar consultas SQLite parametrizadas de existência e `COUNT(*)`, derivando os valores dos registros persistidos em `backend/src/infrastructure/persistence/sqlite/sqlite-followers.repository.ts`
-- [ ] T020 [US2] Expor os casos de consulta de contagem e estado nos serviços, controller e rotas; registrar `/followers/count` antes de `/:userId` em `backend/src/application/services/followers.service.ts`, `backend/src/presentation/http/controllers/followers.controller.ts` e `backend/src/presentation/http/routes/followers.routes.ts`
-- [ ] T021 [US2] Integrar consultas de contagem e estado ao carregamento inicial e à troca de identificador na interface em `frontend/src/services/followers.service.ts`, `frontend/src/hooks/use-followers.ts` e `frontend/src/pages/FollowersPage/index.tsx`
+- [X] T019 [US2] Implementar consultas SQLite parametrizadas de existência e `COUNT(*)`, derivando os valores dos registros persistidos em `backend/src/infrastructure/persistence/sqlite/sqlite-followers.repository.ts`
+- [X] T020 [US2] Expor os casos de consulta de contagem e estado nos serviços, controller e rotas; registrar `/followers/count` antes de `/:userId` em `backend/src/application/services/followers.service.ts`, `backend/src/presentation/http/controllers/followers.controller.ts` e `backend/src/presentation/http/routes/followers.routes.ts`
+- [X] T021 [US2] Integrar consultas de contagem e estado ao carregamento inicial e à troca de identificador na interface em `frontend/src/services/followers.service.ts`, `frontend/src/hooks/use-followers.ts` e `frontend/src/pages/FollowersPage/index.tsx`
 
 **Checkpoint**: Confirmar que a interface exibe somente valores retornados pela API e que esses valores correspondem ao banco após recarga.
 

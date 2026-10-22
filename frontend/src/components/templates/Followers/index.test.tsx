@@ -21,14 +21,63 @@ function deferred<Value>() {
 function createService(
   follow: () => Promise<FollowersResult>,
   unfollow: () => Promise<FollowersResult>,
+    getFollowerCount: () => Promise<number> = () => Promise.resolve(0),
+    getFollowing: (_creatorId: string, _userId: string) => Promise<boolean> = () =>
+      Promise.resolve(false),
 ): FollowersActions {
-  return {
+    return {
     follow: vi.fn(follow),
     unfollow: vi.fn(unfollow),
-  };
+    getFollowerCount: vi.fn(getFollowerCount),
+    getFollowing: vi.fn(getFollowing),
+    };
 }
 
 describe("FollowersPage", () => {
+  it("loads the persisted count and restores state when the user ID changes", async () => {
+    const user = userEvent.setup();
+    const getFollowing = vi.fn((_creatorId: string, userId: string) =>
+      Promise.resolve(userId === "reader-1"),
+    );
+    const service = createService(
+      () => Promise.resolve({ following: true, followerCount: 2 }),
+      () => Promise.resolve({ following: false, followerCount: 1 }),
+      () => Promise.resolve(2),
+      getFollowing,
+    );
+
+    render(
+      <FollowersTemplate
+        creatorId="creator-1"
+        creatorName="Criadora em destaque"
+        service={service}
+      />,
+    );
+
+    expect(
+      await screen.findByText("2 pessoas acompanham esta criadora."),
+    ).toBeInTheDocument();
+
+    const userIdInput = screen.getByRole("textbox", {
+      name: "Seu identificador",
+    });
+    await user.type(userIdInput, "reader-1");
+
+    expect(
+      await screen.findByRole("button", { name: "Deixar de seguir" }),
+    ).toBeEnabled();
+
+    await user.clear(userIdInput);
+    await user.type(userIdInput, "reader-2");
+
+    expect(await screen.findByRole("button", { name: "Seguir" })).toBeEnabled();
+    expect(getFollowing).toHaveBeenCalledWith("creator-1", "reader-1");
+    expect(getFollowing).toHaveBeenCalledWith("creator-1", "reader-2");
+    expect(
+      screen.getByText("2 pessoas acompanham esta criadora."),
+    ).toBeInTheDocument();
+  });
+
   it("changes follow state only after the API confirms each operation", async () => {
     const user = userEvent.setup();
     const followRequest = deferred<FollowersResult>();
@@ -123,7 +172,10 @@ describe("FollowersPage", () => {
     );
     expect(screen.getByRole("button", { name: "Seguir" })).toBeEnabled();
     expect(
-      screen.queryByText(/acompanha esta criadora\./),
+      screen.queryByText("Agora você acompanha esta criadora."),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Você deixou de seguir a criadora."),
     ).not.toBeInTheDocument();
   });
 });
