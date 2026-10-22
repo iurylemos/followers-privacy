@@ -1,0 +1,3 @@
+# Local agent credentials and private artifacts
+.github/agents/**/.env
+.github/agents/**/.env.*
