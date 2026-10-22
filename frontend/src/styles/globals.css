@@ -242,6 +242,10 @@ a:focus-visible {
   color: var(--color-quiet);
 }
 
+.follow-form input[aria-invalid="true"] {
+  border-color: #a43e34;
+}
+
 .input-hint {
   margin: 8px 0 0;
   color: var(--color-quiet);
@@ -326,7 +330,7 @@ a:focus-visible {
 
   .follow-layout {
     padding-block: 30px;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .creator-panel {

@@ -77,15 +77,15 @@
 
 ### Tests for User Story 3
 
-- [ ] T022 [P] [US3] Escrever testes de componente para labels, semântica, foco, teclado e estados inválido/carregando em `frontend/src/components/atoms/UserIdInput/index.test.tsx` e `frontend/src/components/atoms/FollowButton/index.test.tsx`
-- [ ] T023 [P] [US3] Escrever testes para mensagens acessíveis de sucesso/erro e apresentação da contagem em `frontend/src/components/atoms/StatusMessage/index.test.tsx` e `frontend/src/components/molecules/FollowerCount/index.test.tsx`
-- [ ] T024 [US3] Escrever testes de integração da página para falha de rede, resposta inválida, mensagens anunciáveis e ausência de alteração não confirmada em `frontend/tests/pages/FollowersPage/index.test.tsx`
+- [X] T022 [P] [US3] Escrever testes de componente para labels, semântica, foco, teclado e estados inválido/carregando em `frontend/src/components/atoms/UserIdInput/index.test.tsx` e `frontend/src/components/atoms/FollowButton/index.test.tsx`
+- [X] T023 [P] [US3] Escrever testes para mensagens acessíveis de sucesso/erro e apresentação da contagem em `frontend/src/components/atoms/StatusMessage/index.test.tsx` e `frontend/src/components/molecules/FollowerCount/index.test.tsx`
+- [X] T024 [US3] Escrever testes de integração da página para falha de rede, resposta inválida, mensagens anunciáveis e ausência de alteração não confirmada em `frontend/src/components/templates/Followers/index.test.tsx`
 
 ### Implementation for User Story 3
 
-- [ ] T025 [US3] Implementar controles com labels, identificação programática, foco visível e validação acessível do identificador em `frontend/src/components/atoms/UserIdInput/index.tsx` e `frontend/src/components/atoms/FollowButton/index.tsx`
-- [ ] T026 [US3] Implementar mensagens de carregamento, sucesso e erro anunciáveis sem comunicar sucesso antes da resposta confirmada em `frontend/src/components/atoms/StatusMessage/index.tsx`, `frontend/src/components/molecules/FollowControl/index.tsx` e `frontend/src/hooks/use-followers.ts`
-- [ ] T027 [US3] Integrar controles acessíveis e layout mobile-first a partir de 320 px na página, template e estilos globais em `frontend/src/components/organisms/FollowersCard/index.tsx`, `frontend/src/components/templates/FollowersTemplate/index.tsx`, `frontend/src/pages/FollowersPage/index.tsx` e `frontend/src/styles/globals.css`
+- [X] T025 [US3] Implementar controles com labels, identificação programática, foco visível e validação acessível do identificador em `frontend/src/components/atoms/UserIdInput/index.tsx` e `frontend/src/components/atoms/FollowButton/index.tsx`
+- [X] T026 [US3] Implementar mensagens de carregamento, sucesso e erro anunciáveis sem comunicar sucesso antes da resposta confirmada em `frontend/src/components/atoms/StatusMessage/index.tsx` e `frontend/src/hooks/use-followers.hook.tsx`
+- [X] T027 [US3] Integrar controles acessíveis e layout mobile-first a partir de 320 px no template e estilos globais em `frontend/src/components/templates/Followers/index.tsx` e `frontend/src/styles/globals.css`
 
 **Checkpoint**: Validar falhas simuladas e concluir os fluxos principais usando apenas teclado, incluindo viewport móvel.
 

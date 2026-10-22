@@ -1,7 +1,11 @@
 import type { ChangeEvent, JSX } from "react";
 import type { FollowersActions } from "../../../interfaces/followers.interface";
-import { FollowersUtil } from "../../../utils/followers.util";
 import { useFollowers } from "../../../hooks/use-followers.hook";
+import { FollowersUtil } from "../../../utils/followers.util";
+import UserIdInput from "../../atoms/UserIdInput";
+import FollowButton from "../../atoms/FollowButton";
+import StatusMessage from "../../atoms/StatusMessage";
+import FollowerCount from "../../molecules/FollowerCount";
 
 type FollowersTemplateProps = {
   creatorId: string;
@@ -76,50 +80,21 @@ export default function FollowersTemplate({
           </div>
 
           <form className="follow-form" onSubmit={submit}>
-            <label htmlFor="user-id">Seu identificador</label>
-            <input
-              autoComplete="off"
+            <UserIdInput
               disabled={isPending}
-              id="user-id"
-              maxLength={64}
-              name="userId"
               onChange={handleUserIdChange}
-              pattern="[A-Za-z0-9_-]{1,64}"
-              placeholder="por exemplo, reader-42"
-              required
               value={userId}
             />
-            <p className="input-hint">
-              Use letras, números, hífen ou sublinhado.
-            </p>
-
-            <button
-              aria-busy={isPending}
-              className="follow-button"
-              disabled={isPending || userId.length === 0}
-              type="submit"
-            >
-              {isPending
-                ? "Salvando…"
-                : following
-                  ? "Deixar de seguir"
-                  : "Seguir"}
-            </button>
+            <FollowButton
+              following={following}
+              isPending={isPending}
+              userIdIsValid={FollowersUtil.isValidUserId(userId)}
+            />
           </form>
 
-          {followerCount !== null && (
-            <p className="follower-count">
-              {FollowersUtil.formatFollowerCount(followerCount)}
-            </p>
-          )}
+          {followerCount !== null && <FollowerCount count={followerCount} />}
 
-          <p
-            aria-live="polite"
-            className={`status-message status-message--${statusKind}`}
-            role="status"
-          >
-            {statusMessage}
-          </p>
+          <StatusMessage kind={statusKind} message={statusMessage} />
 
           <p className="privacy-note">
             Este identificador é demonstrativo; não confirma sua identidade.
