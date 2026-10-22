@@ -30,6 +30,14 @@ class InMemoryFollowersRepository implements FollowersRepository {
       followerCount: creatorFollowers?.size ?? 0,
     };
   }
+
+  getFollowerCount(creatorId: string): number {
+    return this.followers.get(creatorId)?.size ?? 0;
+  }
+
+  getFollowing(creatorId: string, userId: string): boolean {
+    return this.followers.get(creatorId)?.has(userId) ?? false;
+  }
 }
 
 function createService(): FollowersService {

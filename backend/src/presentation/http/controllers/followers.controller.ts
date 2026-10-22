@@ -87,4 +87,73 @@ export class FollowersController {
       followerCount: result.followerCount,
     });
   }
+
+  public getFollowerCount(
+    request: Request,
+    response: Response,
+    next: NextFunction,
+  ): void {
+    const creatorId = creatorIdSchema.safeParse(request.params["creatorId"]);
+
+    if (!creatorId.success) {
+      next(
+        new HttpError(
+          400,
+          "INVALID_REQUEST",
+          "The request contains an invalid ID.",
+        ),
+      );
+      return;
+    }
+
+    if (creatorId.data !== this.configuredCreatorId) {
+      next(
+        new HttpError(
+          404,
+          "CREATOR_NOT_FOUND",
+          "The requested creator is not configured.",
+        ),
+      );
+      return;
+    }
+
+    response.status(200).json({
+      followerCount: this.service.getFollowerCount(),
+    });
+  }
+
+  public getFollowing(
+    request: Request,
+    response: Response,
+    next: NextFunction,
+  ): void {
+    const creatorId = creatorIdSchema.safeParse(request.params["creatorId"]);
+    const userId = userIdSchema.safeParse(request.params["userId"]);
+
+    if (!creatorId.success || !userId.success) {
+      next(
+        new HttpError(
+          400,
+          "INVALID_REQUEST",
+          "The request contains an invalid ID.",
+        ),
+      );
+      return;
+    }
+
+    if (creatorId.data !== this.configuredCreatorId) {
+      next(
+        new HttpError(
+          404,
+          "CREATOR_NOT_FOUND",
+          "The requested creator is not configured.",
+        ),
+      );
+      return;
+    }
+
+    response.status(200).json({
+      following: this.service.getFollowing(userId.data),
+    });
+  }
 }

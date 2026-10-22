@@ -121,4 +121,22 @@ describe("SQLite database initialization", () => {
     expect(repository.follow("creator-1", "reader-2").created).toBe(true);
     expect(repository.follow("creator-1", "reader-1").created).toBe(false);
   });
+
+  it("queries persisted follower counts and follow state", () => {
+    const databaseConnection = createDatabaseConnection();
+    databaseConnection.initializeDatabase();
+    const repository = new SQLiteFollowersRepository(
+      databaseConnection.getDatabase(),
+    );
+
+    expect(repository.getFollowerCount("creator-1")).toBe(0);
+    expect(repository.getFollowing("creator-1", "reader-1")).toBe(false);
+
+    repository.follow("creator-1", "reader-1");
+
+    expect(repository.getFollowerCount("creator-1")).toBe(1);
+    expect(repository.getFollowing("creator-1", "reader-1")).toBe(true);
+    expect(repository.getFollowing("creator-1", "reader-2")).toBe(false);
+    expect(repository.getFollowerCount("creator-2")).toBe(0);
+  });
 });

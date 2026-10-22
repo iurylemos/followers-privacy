@@ -33,7 +33,38 @@ export class FollowersService implements FollowersActions {
     );
   }
 
-  private isFollowersResult(value: unknown): boolean {
+  public async getFollowerCount(creatorId: string): Promise<number> {
+    const result = await this.request(
+      `/creators/${encodeURIComponent(creatorId)}/followers/count`,
+      { method: "GET" },
+      [200],
+    );
+
+    if (!this.isFollowerCount(result)) {
+      throw new Error("A API retornou uma resposta inválida.");
+    }
+
+    return result.followerCount;
+  }
+
+  public async getFollowing(
+    creatorId: string,
+    userId: string,
+  ): Promise<boolean> {
+    const result = await this.request(
+      `/creators/${encodeURIComponent(creatorId)}/followers/${encodeURIComponent(userId)}`,
+      { method: "GET" },
+      [200],
+    );
+
+    if (!this.isFollowState(result)) {
+      throw new Error("A API retornou uma resposta inválida.");
+    }
+
+    return result.following;
+  }
+
+  private isFollowersResult(value: unknown): value is FollowersResult {
     if (typeof value !== "object" || value === null) {
       return false;
     }
@@ -50,11 +81,54 @@ export class FollowersService implements FollowersActions {
     );
   }
 
+  private isFollowerCount(
+    value: unknown,
+  ): value is Readonly<{ followerCount: number }> {
+    if (typeof value !== "object" || value === null) {
+      return false;
+    }
+
+    if (!("followerCount" in value)) {
+      return false;
+    }
+
+    return (
+      typeof value.followerCount === "number" &&
+      Number.isSafeInteger(value.followerCount) &&
+      value.followerCount >= 0
+    );
+  }
+
+  private isFollowState(
+    value: unknown,
+  ): value is Readonly<{ following: boolean }> {
+    return (
+      typeof value === "object" &&
+      value !== null &&
+      "following" in value &&
+      typeof value.following === "boolean"
+    );
+  }
+
   private async send(
     path: string,
     init: RequestInit,
     acceptedStatuses: readonly number[],
   ): Promise<FollowersResult> {
+    const result = await this.request(path, init, acceptedStatuses);
+
+    if (!this.isFollowersResult(result)) {
+      throw new Error("A API retornou uma resposta inválida.");
+    }
+
+    return result;
+  }
+
+  private async request(
+    path: string,
+    init: RequestInit,
+    acceptedStatuses: readonly number[],
+  ): Promise<unknown> {
     const response = await this.fetchImplementation(
       `${this.baseUrl}${path}`,
       init,
@@ -66,12 +140,6 @@ export class FollowersService implements FollowersActions {
       );
     }
 
-    const result = (await response.json()) as FollowersResult;
-
-    if (!this.isFollowersResult(result)) {
-      throw new Error("A API retornou uma resposta inválida.");
-    }
-
-    return result;
+    return response.json();
   }
 }

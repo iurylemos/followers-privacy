@@ -26,4 +26,12 @@ export class FollowersService {
       changed: result.removed,
     };
   }
+
+  public getFollowerCount(): number {
+    return this.repository.getFollowerCount(this.creatorId);
+  }
+
+  public getFollowing(userId: string): boolean {
+    return this.repository.getFollowing(this.creatorId, userId);
+  }
 }

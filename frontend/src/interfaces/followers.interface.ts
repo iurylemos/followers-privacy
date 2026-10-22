@@ -8,4 +8,6 @@ export type FollowersResult = {
 export interface FollowersActions {
   follow(creatorId: string, userId: string): Promise<FollowersResult>;
   unfollow(creatorId: string, userId: string): Promise<FollowersResult>;
+  getFollowerCount(creatorId: string): Promise<number>;
+  getFollowing(creatorId: string, userId: string): Promise<boolean>;
 }
