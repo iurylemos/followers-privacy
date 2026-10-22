@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { UserIdInput } from "./index";
+import UserIdInput from "./index";
 
 describe("UserIdInput", () => {
   it("provides a labeled, keyboard-focusable input", async () => {

@@ -14,4 +14,25 @@ export class FollowersUtil {
 
     return `${count} pessoas acompanham esta criadora.`;
   }
+
+  public static isFollowersResult(value: unknown): boolean {
+    if (typeof value !== "object" || value === null) {
+      return false;
+    }
+
+    return (
+      "following" in value &&
+      typeof value.following === "boolean" &&
+      "followerCount" in value &&
+      typeof value.followerCount === "number" &&
+      Number.isSafeInteger(value.followerCount) &&
+      value.followerCount >= 0
+    );
+  }
+
+  public static isFollowerCount(value: unknown): value is number {
+    return (
+      typeof value === "number" && Number.isSafeInteger(value) && value >= 0
+    );
+  }
 }

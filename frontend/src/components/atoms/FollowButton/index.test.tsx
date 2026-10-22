@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { FollowButton } from "./index";
+import FollowButton from "./index";
 
 describe("FollowButton", () => {
   it("is keyboard operable and reflects following state", async () => {

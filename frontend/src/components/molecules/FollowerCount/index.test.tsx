@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { FollowerCount } from "./index";
+import FollowerCount from "./index";
 
 describe("FollowerCount", () => {
   it.each([

@@ -8,30 +8,7 @@ import { FollowersUtil } from "../utils/followers.util";
 
 const invalidApiResponseMessage = "A API retornou uma resposta inválida.";
 
-function isFollowersResult(value: unknown): value is FollowersResult {
-  if (typeof value !== "object" || value === null) {
-    return false;
-  }
-
-  return (
-    "following" in value &&
-    typeof value.following === "boolean" &&
-    "followerCount" in value &&
-    typeof value.followerCount === "number" &&
-    Number.isSafeInteger(value.followerCount) &&
-    value.followerCount >= 0
-  );
-}
-
-function isFollowerCount(value: unknown): value is number {
-  return (
-    typeof value === "number" &&
-    Number.isSafeInteger(value) &&
-    value >= 0
-  );
-}
-
-type FollowersState = Readonly<{
+type FollowersState = {
   userId: string;
   following: boolean;
   followerCount: number | null;
@@ -40,12 +17,12 @@ type FollowersState = Readonly<{
   statusKind: FollowersStatusKind;
   updateUserId: (value: string) => void;
   submit: (event: SubmitEvent<HTMLFormElement>) => Promise<void>;
-}>;
+};
 
 export function useFollowers(
   service: FollowersActions,
   creatorId: string,
-): FollowersState {
+): Readonly<FollowersState> {
   const [userId, setUserId] = useState<string>("");
   const [following, setFollowing] = useState<boolean>(false);
   const [followerCount, setFollowerCount] = useState<number | null>(null);
@@ -64,7 +41,7 @@ export function useFollowers(
         if (cancelled || countRequestVersion.current !== requestVersion) {
           return;
         }
-        if (!isFollowerCount(count)) {
+        if (!FollowersUtil.isFollowerCount(count)) {
           throw new Error(invalidApiResponseMessage);
         }
         setFollowerCount(count);
@@ -148,7 +125,7 @@ export function useFollowers(
       const result: FollowersResult = following
         ? await service.unfollow(creatorId, userId)
         : await service.follow(creatorId, userId);
-      if (!isFollowersResult(result)) {
+      if (!FollowersUtil.isFollowersResult(result)) {
         throw new Error(invalidApiResponseMessage);
       }
       const expectedFollowing = !following;

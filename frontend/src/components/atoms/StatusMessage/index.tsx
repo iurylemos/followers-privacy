@@ -1,15 +1,15 @@
 import type { JSX } from "react";
 import type { FollowersStatusKind } from "../../../interfaces/followers.interface";
 
-type StatusMessageProps = Readonly<{
+type StatusMessageProps = {
   kind: FollowersStatusKind;
   message: string;
-}>;
+};
 
-export function StatusMessage({
+export default function StatusMessage({
   kind,
   message,
-}: StatusMessageProps): JSX.Element {
+}: Readonly<StatusMessageProps>): JSX.Element {
   const isError = kind === "error";
 
   return (

@@ -1,17 +1,17 @@
 import type { ChangeEventHandler, JSX } from "react";
 import { FollowersUtil } from "../../../utils/followers.util";
 
-type UserIdInputProps = Readonly<{
+type UserIdInputProps = {
   disabled?: boolean;
   value: string;
   onChange: ChangeEventHandler<HTMLInputElement>;
-}>;
+};
 
-export function UserIdInput({
+export default function UserIdInput({
   disabled = false,
   value,
   onChange,
-}: UserIdInputProps): JSX.Element {
+}: Readonly<UserIdInputProps>): JSX.Element {
   const isInvalid = value.length > 0 && !FollowersUtil.isValidUserId(value);
 
   return (

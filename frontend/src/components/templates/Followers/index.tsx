@@ -2,10 +2,10 @@ import type { ChangeEvent, JSX } from "react";
 import type { FollowersActions } from "../../../interfaces/followers.interface";
 import { useFollowers } from "../../../hooks/use-followers.hook";
 import { FollowersUtil } from "../../../utils/followers.util";
-import { UserIdInput } from "../../atoms/UserIdInput";
-import { FollowButton } from "../../atoms/FollowButton";
-import { StatusMessage } from "../../atoms/StatusMessage";
-import { FollowerCount } from "../../molecules/FollowerCount";
+import UserIdInput from "../../atoms/UserIdInput";
+import FollowButton from "../../atoms/FollowButton";
+import StatusMessage from "../../atoms/StatusMessage";
+import FollowerCount from "../../molecules/FollowerCount";
 
 type FollowersTemplateProps = {
   creatorId: string;
@@ -92,9 +92,7 @@ export default function FollowersTemplate({
             />
           </form>
 
-          {followerCount !== null && (
-            <FollowerCount count={followerCount} />
-          )}
+          {followerCount !== null && <FollowerCount count={followerCount} />}
 
           <StatusMessage kind={statusKind} message={statusMessage} />
 

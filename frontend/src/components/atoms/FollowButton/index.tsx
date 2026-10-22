@@ -1,18 +1,18 @@
 import type { JSX, MouseEventHandler } from "react";
 
-type FollowButtonProps = Readonly<{
+type FollowButtonProps = {
   following: boolean;
   isPending: boolean;
   userIdIsValid: boolean;
   onClick?: MouseEventHandler<HTMLButtonElement>;
-}>;
+};
 
-export function FollowButton({
+export default function FollowButton({
   following,
   isPending,
   userIdIsValid,
   onClick,
-}: FollowButtonProps): JSX.Element {
+}: Readonly<FollowButtonProps>): JSX.Element {
   return (
     <button
       aria-busy={isPending}
