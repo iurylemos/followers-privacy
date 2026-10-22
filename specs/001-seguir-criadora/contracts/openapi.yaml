@@ -1,0 +1,192 @@
+openapi: 3.1.0
+info:
+  title: Seguir Criadora API
+  version: 1.0.0
+  description: |
+    API local para seguir uma criadora demonstrativa e consultar relações persistidas.
+    O userId é um identificador demonstrativo, não uma identidade autenticada.
+servers:
+  - url: http://localhost:3000
+    description: Servidor local de desenvolvimento
+paths:
+  /creators/{creatorId}/followers:
+    post:
+      operationId: followCreator
+      summary: Seguir a criadora
+      description: Cria a relação se ainda não existir; chamadas repetidas não duplicam seguidores.
+      parameters:
+        - $ref: '#/components/parameters/CreatorId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+                - userId
+              properties:
+                userId:
+                  $ref: '#/components/schemas/Identifier'
+      responses:
+        '201':
+          description: Relação criada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FollowResult'
+        '200':
+          description: A relação já existia; o estado final é seguido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FollowResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /creators/{creatorId}/followers/count:
+    get:
+      operationId: getFollowerCount
+      summary: Consultar a quantidade de seguidores
+      parameters:
+        - $ref: '#/components/parameters/CreatorId'
+      responses:
+        '200':
+          description: Contagem derivada das relações persistidas.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FollowerCount'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /creators/{creatorId}/followers/{userId}:
+    get:
+      operationId: getFollowState
+      summary: Consultar se um identificador segue a criadora
+      parameters:
+        - $ref: '#/components/parameters/CreatorId'
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Estado atual do seguimento.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FollowState'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      operationId: unfollowCreator
+      summary: Deixar de seguir a criadora
+      description: Remove a relação se existir; chamadas repetidas mantêm o estado não seguido.
+      parameters:
+        - $ref: '#/components/parameters/CreatorId'
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Estado final não seguido, incluindo quando a relação já não existia.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FollowResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+components:
+  parameters:
+    CreatorId:
+      name: creatorId
+      in: path
+      required: true
+      description: ID da criadora demonstrativa configurada.
+      schema:
+        $ref: '#/components/schemas/Identifier'
+    UserId:
+      name: userId
+      in: path
+      required: true
+      description: Identificador demonstrativo; não prova identidade.
+      schema:
+        $ref: '#/components/schemas/Identifier'
+  schemas:
+    Identifier:
+      type: string
+      minLength: 1
+      maxLength: 64
+      pattern: '^[A-Za-z0-9_-]{1,64}$'
+    FollowResult:
+      type: object
+      additionalProperties: false
+      required:
+        - following
+        - followerCount
+      properties:
+        following:
+          type: boolean
+        followerCount:
+          type: integer
+          minimum: 0
+    FollowState:
+      type: object
+      additionalProperties: false
+      required:
+        - following
+      properties:
+        following:
+          type: boolean
+    FollowerCount:
+      type: object
+      additionalProperties: false
+      required:
+        - followerCount
+      properties:
+        followerCount:
+          type: integer
+          minimum: 0
+    Error:
+      type: object
+      additionalProperties: false
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+  responses:
+    BadRequest:
+      description: ID ou corpo da requisição inválido.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: A criadora solicitada não está configurada.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    InternalError:
+      description: Falha interna; detalhes sensíveis não são incluídos.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
