@@ -1,15 +1,16 @@
-import Database from 'better-sqlite3';
-import { afterEach, describe, expect, it } from 'vitest';
-import { initializeDatabase } from '../../src/infrastructure/persistence/database.connection';
-import { SQLiteFollowersRepository } from '../../src/infrastructure/persistence/sqlite/sqlite-followers.repository';
+import Database from "better-sqlite3";
+import { afterEach, describe, expect, it } from "vitest";
+import { SQLiteFollowersRepository } from "../../src/infrastructure/persistence/sqlite/sqlite-followers.repository";
+import { DatabaseConnection } from "../../src/infrastructure/persistence/database.connection";
 
-describe('SQLite database initialization', () => {
+describe("SQLite database initialization", () => {
   const databases: Database.Database[] = [];
 
-  function createDatabase(): Database.Database {
-    const database = new Database(':memory:');
+  function createDatabaseConnection(): DatabaseConnection {
+    const databaseConnection = new DatabaseConnection(":memory:");
+    const database = databaseConnection.getDatabase();
     databases.push(database);
-    return database;
+    return databaseConnection;
   }
 
   afterEach(() => {
@@ -18,90 +19,106 @@ describe('SQLite database initialization', () => {
     }
   });
 
-  it('applies the versioned followers migration', () => {
-    const database = createDatabase();
+  it("applies the versioned followers migration", () => {
+    const databaseConnection = createDatabaseConnection();
+    const database = databaseConnection.getDatabase();
 
-    initializeDatabase(database);
+    databaseConnection.initializeDatabase();
 
-    expect(database.pragma('user_version')).toEqual([{ user_version: 1 }]);
-    expect(database.prepare(
-      "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'creator_followers'",
-    ).get()).toEqual({ name: 'creator_followers' });
+    expect(database.pragma("user_version")).toEqual([{ user_version: 1 }]);
+    expect(
+      database
+        .prepare(
+          "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'creator_followers'",
+        )
+        .get(),
+    ).toEqual({ name: "creator_followers" });
   });
 
-  it('can initialize the same database repeatedly', () => {
-    const database = createDatabase();
+  it("can initialize the same database repeatedly", () => {
+    const databaseConnection = createDatabaseConnection();
 
     expect(() => {
-      initializeDatabase(database);
-      initializeDatabase(database);
+      databaseConnection.initializeDatabase();
+      databaseConnection.initializeDatabase();
     }).not.toThrow();
 
-    expect(database.pragma('user_version')).toEqual([{ user_version: 1 }]);
+    expect(databaseConnection.getDatabase().pragma("user_version")).toEqual([
+      { user_version: 1 },
+    ]);
   });
 
-  it('keeps independent in-memory databases isolated', () => {
-    const first = createDatabase();
-    const second = createDatabase();
+  it("keeps independent in-memory databases isolated", () => {
+    const firstConnection = createDatabaseConnection();
+    const secondConnection = createDatabaseConnection();
+    const firstRepository = new SQLiteFollowersRepository(
+      firstConnection.getDatabase(),
+    );
+    const secondRepository = new SQLiteFollowersRepository(
+      secondConnection.getDatabase(),
+    );
 
-    initializeDatabase(first);
-
-    expect(first.prepare(
-      "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'creator_followers'",
-    ).get()).toEqual({ name: 'creator_followers' });
-    expect(second.prepare(
-      "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'creator_followers'",
-    ).get()).toBeUndefined();
-  });
-
-  it('persists a unique relation and does not increment its count twice', () => {
-    const database = createDatabase();
-    initializeDatabase(database);
-    const repository = new SQLiteFollowersRepository(database);
-
-    expect(repository.follow('creator-1', 'reader-1')).toEqual({
+    expect(firstRepository.follow("creator-1", "reader-1")).toEqual({
       created: true,
       followerCount: 1,
     });
-    expect(repository.follow('creator-1', 'reader-1')).toEqual({
+    expect(secondRepository.follow("creator-1", "reader-1")).toEqual({
+      created: true,
+      followerCount: 1,
+    });
+  });
+
+  it("persists a unique relation and does not increment its count twice", () => {
+    const databaseConnection = createDatabaseConnection();
+    databaseConnection.initializeDatabase();
+    const database = databaseConnection.getDatabase();
+    const repository = new SQLiteFollowersRepository(database);
+
+    expect(repository.follow("creator-1", "reader-1")).toEqual({
+      created: true,
+      followerCount: 1,
+    });
+    expect(repository.follow("creator-1", "reader-1")).toEqual({
       created: false,
       followerCount: 1,
     });
-    expect(repository.follow('creator-1', 'reader-2')).toEqual({
+    expect(repository.follow("creator-1", "reader-2")).toEqual({
       created: true,
       followerCount: 2,
     });
   });
 
-  it('removes only the requested relation and makes removal idempotent', () => {
-    const database = createDatabase();
-    initializeDatabase(database);
+  it("removes only the requested relation and makes removal idempotent", () => {
+    const databaseConnection = createDatabaseConnection();
+    databaseConnection.initializeDatabase();
+    const database = databaseConnection.getDatabase();
     const repository = new SQLiteFollowersRepository(database);
-    repository.follow('creator-1', 'reader-1');
-    repository.follow('creator-1', 'reader-2');
+    repository.follow("creator-1", "reader-1");
+    repository.follow("creator-1", "reader-2");
 
-    expect(repository.unfollow('creator-1', 'reader-1')).toEqual({
+    expect(repository.unfollow("creator-1", "reader-1")).toEqual({
       removed: true,
       followerCount: 1,
     });
-    expect(repository.unfollow('creator-1', 'reader-1')).toEqual({
+    expect(repository.unfollow("creator-1", "reader-1")).toEqual({
       removed: false,
       followerCount: 1,
     });
-    expect(repository.unfollow('creator-1', 'unknown')).toEqual({
+    expect(repository.unfollow("creator-1", "unknown")).toEqual({
       removed: false,
       followerCount: 1,
     });
   });
 
-  it('keeps relations unique by creator and user pair', () => {
-    const database = createDatabase();
-    initializeDatabase(database);
+  it("keeps relations unique by creator and user pair", () => {
+    const databaseConnection = createDatabaseConnection();
+    databaseConnection.initializeDatabase();
+    const database = databaseConnection.getDatabase();
     const repository = new SQLiteFollowersRepository(database);
 
-    expect(repository.follow('creator-1', 'reader-1').created).toBe(true);
-    expect(repository.follow('creator-2', 'reader-1').created).toBe(true);
-    expect(repository.follow('creator-1', 'reader-2').created).toBe(true);
-    expect(repository.follow('creator-1', 'reader-1').created).toBe(false);
+    expect(repository.follow("creator-1", "reader-1").created).toBe(true);
+    expect(repository.follow("creator-2", "reader-1").created).toBe(true);
+    expect(repository.follow("creator-1", "reader-2").created).toBe(true);
+    expect(repository.follow("creator-1", "reader-1").created).toBe(false);
   });
 });

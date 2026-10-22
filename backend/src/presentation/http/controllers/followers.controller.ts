@@ -1,15 +1,11 @@
-import type { NextFunction, Request, Response } from 'express';
-import { z } from 'zod';
-import { FollowersService } from '../../../application/services/followers.service';
+import type { NextFunction, Request, Response } from "express";
+import { FollowersService } from "../../../application/services/followers.service";
 import {
   creatorIdSchema,
+  followRequestBodySchema,
   userIdSchema,
-} from '../schemas/followers.schema';
-import { HttpError } from '../http-error';
-
-const requestBodySchema = z.object({
-  userId: userIdSchema,
-}).strict();
+} from "../schemas/followers.schema";
+import { HttpError } from "../http-error";
 
 export class FollowersController {
   constructor(
@@ -17,17 +13,33 @@ export class FollowersController {
     private readonly configuredCreatorId: string,
   ) {}
 
-  readonly follow = (request: Request, response: Response, next: NextFunction): void => {
-    const creatorId = creatorIdSchema.safeParse(request.params['creatorId']);
-    const body = requestBodySchema.safeParse(request.body);
+  public follow(
+    request: Request,
+    response: Response,
+    next: NextFunction,
+  ): void {
+    const creatorId = creatorIdSchema.safeParse(request.params["creatorId"]);
+    const body = followRequestBodySchema.safeParse(request.body);
 
     if (!creatorId.success || !body.success) {
-      next(new HttpError(400, 'INVALID_REQUEST', 'The request contains an invalid ID or body.'));
+      next(
+        new HttpError(
+          400,
+          "INVALID_REQUEST",
+          "The request contains an invalid ID or body.",
+        ),
+      );
       return;
     }
 
     if (creatorId.data !== this.configuredCreatorId) {
-      next(new HttpError(404, 'CREATOR_NOT_FOUND', 'The requested creator is not configured.'));
+      next(
+        new HttpError(
+          404,
+          "CREATOR_NOT_FOUND",
+          "The requested creator is not configured.",
+        ),
+      );
       return;
     }
 
@@ -36,26 +48,43 @@ export class FollowersController {
       following: true,
       followerCount: result.followerCount,
     });
-  };
+  }
 
-  readonly unfollow = (request: Request, response: Response, next: NextFunction): void => {
-    const creatorId = creatorIdSchema.safeParse(request.params['creatorId']);
-    const userId = userIdSchema.safeParse(request.params['userId']);
+  public unfollow(
+    request: Request,
+    response: Response,
+    next: NextFunction,
+  ): void {
+    const creatorId = creatorIdSchema.safeParse(request.params["creatorId"]);
+    const userId = userIdSchema.safeParse(request.params["userId"]);
 
     if (!creatorId.success || !userId.success) {
-      next(new HttpError(400, 'INVALID_REQUEST', 'The request contains an invalid ID.'));
+      next(
+        new HttpError(
+          400,
+          "INVALID_REQUEST",
+          "The request contains an invalid ID.",
+        ),
+      );
       return;
     }
 
     if (creatorId.data !== this.configuredCreatorId) {
-      next(new HttpError(404, 'CREATOR_NOT_FOUND', 'The requested creator is not configured.'));
+      next(
+        new HttpError(
+          404,
+          "CREATOR_NOT_FOUND",
+          "The requested creator is not configured.",
+        ),
+      );
       return;
     }
 
     const result = this.service.unfollow(userId.data);
+
     response.status(200).json({
       following: false,
       followerCount: result.followerCount,
     });
-  };
+  }
 }

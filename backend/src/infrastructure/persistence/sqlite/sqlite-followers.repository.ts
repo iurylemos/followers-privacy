@@ -1,22 +1,22 @@
-import Database from 'better-sqlite3';
+import type { Statement, RunResult, Database } from "better-sqlite3";
 import type {
   FollowersRepository,
   FollowMutation,
   UnfollowMutation,
-} from '../../../domain/repositories/followers.repository';
+} from "../../../domain/repositories/followers.repository";
 
 type FollowerCountRow = Readonly<{ follower_count: number }>;
 
 export class SQLiteFollowersRepository implements FollowersRepository {
-  private readonly insertStatement: Database.Statement<
+  private readonly insertStatement: Statement<
     [creatorId: string, userId: string],
-    Database.RunResult
+    RunResult
   >;
-  private readonly deleteStatement: Database.Statement<
+  private readonly deleteStatement: Statement<
     [creatorId: string, userId: string],
-    Database.RunResult
+    RunResult
   >;
-  private readonly countStatement: Database.Statement<
+  private readonly countStatement: Statement<
     [creatorId: string],
     FollowerCountRow
   >;
@@ -29,10 +29,10 @@ export class SQLiteFollowersRepository implements FollowersRepository {
     userId: string,
   ) => UnfollowMutation;
 
-  constructor(private readonly database: Database.Database) {
+  constructor(private readonly database: Database) {
     this.insertStatement = database.prepare<
       [creatorId: string, userId: string],
-      Database.RunResult
+      RunResult
     >(
       `INSERT INTO creator_followers (creator_id, user_id)
        VALUES (?, ?)
@@ -40,7 +40,7 @@ export class SQLiteFollowersRepository implements FollowersRepository {
     );
     this.deleteStatement = database.prepare<
       [creatorId: string, userId: string],
-      Database.RunResult
+      RunResult
     >(
       `DELETE FROM creator_followers
        WHERE creator_id = ? AND user_id = ?`,
@@ -74,19 +74,23 @@ export class SQLiteFollowersRepository implements FollowersRepository {
     });
   }
 
-  follow(creatorId: string, userId: string): FollowMutation {
+  public follow(creatorId: string, userId: string): FollowMutation {
     return this.followTransaction(creatorId, userId);
   }
 
-  unfollow(creatorId: string, userId: string): UnfollowMutation {
+  public unfollow(creatorId: string, userId: string): UnfollowMutation {
     return this.unfollowTransaction(creatorId, userId);
   }
 
   private readFollowerCount(creatorId: string): number {
     const row = this.countStatement.get(creatorId);
 
-    if (!row || !Number.isSafeInteger(row.follower_count) || row.follower_count < 0) {
-      throw new Error('SQLite returned an invalid follower count.');
+    if (
+      !row ||
+      !Number.isSafeInteger(row.follower_count) ||
+      row.follower_count < 0
+    ) {
+      throw new Error("SQLite returned an invalid follower count.");
     }
 
     return row.follower_count;

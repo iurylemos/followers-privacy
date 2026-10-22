@@ -1,0 +1,11 @@
+export type FollowersStatusKind = "idle" | "pending" | "success" | "error";
+
+export type FollowersResult = {
+  following: boolean;
+  followerCount: number;
+};
+
+export interface FollowersActions {
+  follow(creatorId: string, userId: string): Promise<FollowersResult>;
+  unfollow(creatorId: string, userId: string): Promise<FollowersResult>;
+}

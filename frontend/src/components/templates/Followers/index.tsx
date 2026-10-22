@@ -1,30 +1,19 @@
-import type { ChangeEvent } from 'react';
-import type { FollowersActions } from '../../services/followers.service';
-import { useFollowers } from '../../hooks/use-followers';
+import type { ChangeEvent, JSX } from "react";
+import type { FollowersActions } from "../../../interfaces/followers.interface";
+import { FollowersUtil } from "../../../utils/followers.util";
+import { useFollowers } from "../../../hooks/use-followers.hook";
 
-export type FollowersPageProps = Readonly<{
+type FollowersTemplateProps = {
   creatorId: string;
   creatorName: string;
   service: FollowersActions;
-}>;
+};
 
-function formatFollowerCount(count: number): string {
-  if (count === 0) {
-    return 'Nenhuma pessoa acompanha esta criadora.';
-  }
-
-  if (count === 1) {
-    return '1 pessoa acompanha esta criadora.';
-  }
-
-  return `${count} pessoas acompanham esta criadora.`;
-}
-
-export function FollowersPage({
+export default function FollowersTemplate({
   creatorId,
   creatorName,
   service,
-}: FollowersPageProps) {
+}: Readonly<FollowersTemplateProps>): JSX.Element {
   const {
     userId,
     following,
@@ -36,9 +25,9 @@ export function FollowersPage({
     submit,
   } = useFollowers(service, creatorId);
 
-  function handleUserIdChange(event: ChangeEvent<HTMLInputElement>): void {
+  const handleUserIdChange = (event: ChangeEvent<HTMLInputElement>): void => {
     updateUserId(event.currentTarget.value);
-  }
+  };
 
   return (
     <div className="page-shell">
@@ -47,7 +36,9 @@ export function FollowersPage({
           <span aria-hidden="true" className="wordmark__mark" />
           seguir
         </a>
-        <p className="site-header__note">Um gesto simples, uma comunidade mais próxima.</p>
+        <p className="site-header__note">
+          Um gesto simples, uma comunidade mais próxima.
+        </p>
       </header>
 
       <main className="follow-layout">
@@ -61,11 +52,13 @@ export function FollowersPage({
               .split(/\s+/)
               .slice(0, 2)
               .map((word) => word.charAt(0))
-              .join('')
-              .toLocaleUpperCase('pt-BR')}
+              .join("")
+              .toLocaleUpperCase("pt-BR")}
           </div>
           <div className="creator-panel__identity">
-            <p className="creator-panel__eyebrow">Um lugar para acompanhar de perto</p>
+            <p className="creator-panel__eyebrow">
+              Um lugar para acompanhar de perto
+            </p>
             <h1 id="creator-heading">{creatorName}</h1>
             <p className="creator-panel__description">
               Ideias, histórias e inspiração — mais perto de quem acompanha.
@@ -96,7 +89,9 @@ export function FollowersPage({
               required
               value={userId}
             />
-            <p className="input-hint">Use letras, números, hífen ou sublinhado.</p>
+            <p className="input-hint">
+              Use letras, números, hífen ou sublinhado.
+            </p>
 
             <button
               aria-busy={isPending}
@@ -104,12 +99,18 @@ export function FollowersPage({
               disabled={isPending || userId.length === 0}
               type="submit"
             >
-              {isPending ? 'Salvando…' : following ? 'Deixar de seguir' : 'Seguir'}
+              {isPending
+                ? "Salvando…"
+                : following
+                  ? "Deixar de seguir"
+                  : "Seguir"}
             </button>
           </form>
 
           {followerCount !== null && (
-            <p className="follower-count">{formatFollowerCount(followerCount)}</p>
+            <p className="follower-count">
+              {FollowersUtil.formatFollowerCount(followerCount)}
+            </p>
           )}
 
           <p

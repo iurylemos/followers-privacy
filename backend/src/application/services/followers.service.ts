@@ -1,16 +1,5 @@
-import type { FollowersRepository } from '../../domain/repositories/followers.repository';
-
-export type FollowServiceResult = Readonly<{
-  following: true;
-  followerCount: number;
-  changed: boolean;
-}>;
-
-export type UnfollowServiceResult = Readonly<{
-  following: false;
-  followerCount: number;
-  changed: boolean;
-}>;
+import type { FollowersRepository } from "../../domain/repositories/followers.repository";
+import type { FollowResult } from "../interfaces/followers.interface";
 
 export class FollowersService {
   constructor(
@@ -18,7 +7,7 @@ export class FollowersService {
     private readonly creatorId: string,
   ) {}
 
-  follow(userId: string): FollowServiceResult {
+  public follow(userId: string): FollowResult {
     const result = this.repository.follow(this.creatorId, userId);
 
     return {
@@ -28,7 +17,7 @@ export class FollowersService {
     };
   }
 
-  unfollow(userId: string): UnfollowServiceResult {
+  public unfollow(userId: string): FollowResult {
     const result = this.repository.unfollow(this.creatorId, userId);
 
     return {

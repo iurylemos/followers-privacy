@@ -1,12 +1,12 @@
-export type FollowMutation = Readonly<{
+export type FollowMutation = {
   created: boolean;
   followerCount: number;
-}>;
+};
 
-export type UnfollowMutation = Readonly<{
+export type UnfollowMutation = {
   removed: boolean;
   followerCount: number;
-}>;
+};
 
 export interface FollowersRepository {
   follow(creatorId: string, userId: string): FollowMutation;

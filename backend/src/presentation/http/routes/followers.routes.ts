@@ -1,16 +1,21 @@
-import { Router } from 'express';
-import { FollowersService } from '../../../application/services/followers.service';
-import { FollowersController } from '../controllers/followers.controller';
+import { Router } from "express";
+import { FollowersController } from "../controllers/followers.controller";
 
-export function createFollowersRoutes(
-  service: FollowersService,
-  creatorId: string,
-): Router {
-  const router = Router();
-  const controller = new FollowersController(service, creatorId);
+export class FollowersRoutes {
+  constructor(private readonly controller: FollowersController) {}
 
-  router.post('/:creatorId/followers', controller.follow);
-  router.delete('/:creatorId/followers/:userId', controller.unfollow);
+  public getRouterCreators(): Router {
+    const router = Router();
 
-  return router;
+    router.post(
+      "/:creatorId/followers",
+      this.controller.follow.bind(this.controller),
+    );
+    router.delete(
+      "/:creatorId/followers/:userId",
+      this.controller.unfollow.bind(this.controller),
+    );
+
+    return router;
+  }
 }

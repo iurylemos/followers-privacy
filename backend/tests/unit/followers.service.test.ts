@@ -1,10 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
 import type {
   FollowersRepository,
   FollowMutation,
   UnfollowMutation,
-} from '../../src/domain/repositories/followers.repository';
-import { FollowersService } from '../../src/application/services/followers.service';
+} from "../../src/domain/repositories/followers.repository";
+import { FollowersService } from "../../src/application/services/followers.service";
 
 class InMemoryFollowersRepository implements FollowersRepository {
   private readonly followers = new Map<string, Set<string>>();
@@ -33,42 +33,42 @@ class InMemoryFollowersRepository implements FollowersRepository {
 }
 
 function createService(): FollowersService {
-  return new FollowersService(new InMemoryFollowersRepository(), 'creator-1');
+  return new FollowersService(new InMemoryFollowersRepository(), "creator-1");
 }
 
-describe('FollowersService', () => {
-  it('creates a relation and returns the confirmed state and count', () => {
-    expect(createService().follow('reader-1')).toEqual({
+describe("FollowersService", () => {
+  it("creates a relation and returns the confirmed state and count", () => {
+    expect(createService().follow("reader-1")).toEqual({
       following: true,
       followerCount: 1,
       changed: true,
     });
   });
 
-  it('does not duplicate a repeated follow request', () => {
+  it("does not duplicate a repeated follow request", () => {
     const service = createService();
-    service.follow('reader-1');
+    service.follow("reader-1");
 
-    expect(service.follow('reader-1')).toEqual({
+    expect(service.follow("reader-1")).toEqual({
       following: true,
       followerCount: 1,
       changed: false,
     });
   });
 
-  it('removes an existing relation and returns the final count', () => {
+  it("removes an existing relation and returns the final count", () => {
     const service = createService();
-    service.follow('reader-1');
+    service.follow("reader-1");
 
-    expect(service.unfollow('reader-1')).toEqual({
+    expect(service.unfollow("reader-1")).toEqual({
       following: false,
       followerCount: 0,
       changed: true,
     });
   });
 
-  it('keeps an absent relation unchanged when unfollow is repeated', () => {
-    expect(createService().unfollow('reader-1')).toEqual({
+  it("keeps an absent relation unchanged when unfollow is repeated", () => {
+    expect(createService().unfollow("reader-1")).toEqual({
       following: false,
       followerCount: 0,
       changed: false,
