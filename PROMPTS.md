@@ -43,5 +43,6 @@ deverão atualizar este arquivo e os contratos afetados.
 - Adicioneis skills: Speckit, GrillMe, AgentBrowser, TDD
 - Adicionei um design system para o Backend (Layered Architecture)
 - Adicionei um design system para o Frontend (Atomic Design System)
+- Criação do arquivo de tasks separado pro histórias (Para cada janela de contexto)
 
 ## O que não verifiquei
