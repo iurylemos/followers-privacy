@@ -1,4 +1,8 @@
 export class FollowersUtil {
+  public static isValidUserId(userId: string): boolean {
+    return /^[A-Za-z0-9_-]{1,64}$/.test(userId);
+  }
+
   public static formatFollowerCount(count: number): string {
     if (count === 0) {
       return "Nenhuma pessoa acompanha esta criadora.";

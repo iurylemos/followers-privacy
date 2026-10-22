@@ -4,6 +4,32 @@ import type {
   FollowersStatusKind,
   FollowersResult,
 } from "../interfaces/followers.interface";
+import { FollowersUtil } from "../utils/followers.util";
+
+const invalidApiResponseMessage = "A API retornou uma resposta inválida.";
+
+function isFollowersResult(value: unknown): value is FollowersResult {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  return (
+    "following" in value &&
+    typeof value.following === "boolean" &&
+    "followerCount" in value &&
+    typeof value.followerCount === "number" &&
+    Number.isSafeInteger(value.followerCount) &&
+    value.followerCount >= 0
+  );
+}
+
+function isFollowerCount(value: unknown): value is number {
+  return (
+    typeof value === "number" &&
+    Number.isSafeInteger(value) &&
+    value >= 0
+  );
+}
 
 type FollowersState = Readonly<{
   userId: string;
@@ -35,9 +61,13 @@ export function useFollowers(
     void service
       .getFollowerCount(creatorId)
       .then((count) => {
-        if (!cancelled && countRequestVersion.current === requestVersion) {
-          setFollowerCount(count);
+        if (cancelled || countRequestVersion.current !== requestVersion) {
+          return;
         }
+        if (!isFollowerCount(count)) {
+          throw new Error(invalidApiResponseMessage);
+        }
+        setFollowerCount(count);
       })
       .catch((error: unknown) => {
         if (cancelled || countRequestVersion.current !== requestVersion) {
@@ -57,7 +87,7 @@ export function useFollowers(
   }, [creatorId, service]);
 
   useEffect(() => {
-    if (!/^[A-Za-z0-9_-]{1,64}$/.test(userId)) {
+    if (!FollowersUtil.isValidUserId(userId)) {
       return;
     }
 
@@ -66,9 +96,13 @@ export function useFollowers(
     void service
       .getFollowing(creatorId, userId)
       .then((isFollowing) => {
-        if (!cancelled) {
-          setFollowing(isFollowing);
+        if (cancelled) {
+          return;
         }
+        if (typeof isFollowing !== "boolean") {
+          throw new Error(invalidApiResponseMessage);
+        }
+        setFollowing(isFollowing);
       })
       .catch((error: unknown) => {
         if (cancelled) {
@@ -100,6 +134,11 @@ export function useFollowers(
     if (isPending) {
       return;
     }
+    if (!FollowersUtil.isValidUserId(userId)) {
+      setStatusKind("error");
+      setStatusMessage("Informe um identificador válido para continuar.");
+      return;
+    }
 
     setIsPending(true);
     setStatusKind("pending");
@@ -109,6 +148,9 @@ export function useFollowers(
       const result: FollowersResult = following
         ? await service.unfollow(creatorId, userId)
         : await service.follow(creatorId, userId);
+      if (!isFollowersResult(result)) {
+        throw new Error(invalidApiResponseMessage);
+      }
       const expectedFollowing = !following;
 
       if (result.following !== expectedFollowing) {

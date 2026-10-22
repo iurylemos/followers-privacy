@@ -167,7 +167,7 @@ describe("FollowersPage", () => {
     );
     await user.click(screen.getByRole("button", { name: "Seguir" }));
 
-    expect(await screen.findByRole("status")).toHaveTextContent(
+    expect(await screen.findByRole("alert")).toHaveTextContent(
       "A API está indisponível.",
     );
     expect(screen.getByRole("button", { name: "Seguir" })).toBeEnabled();
@@ -176,6 +176,71 @@ describe("FollowersPage", () => {
     ).not.toBeInTheDocument();
     expect(
       screen.queryByText("Você deixou de seguir a criadora."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("rejects an invalid identifier accessibly without calling the API", async () => {
+    const user = userEvent.setup();
+    const follow = vi.fn(() =>
+      Promise.resolve({ following: true, followerCount: 1 }),
+    );
+    const service = createService(
+      follow,
+      () => Promise.resolve({ following: false, followerCount: 0 }),
+    );
+
+    render(
+      <FollowersTemplate
+        creatorId="creator-1"
+        creatorName="Criadora em destaque"
+        service={service}
+      />,
+    );
+
+    const userIdInput = screen.getByRole("textbox", {
+      name: "Seu identificador",
+    });
+    await user.type(userIdInput, "reader id");
+
+    expect(userIdInput).toHaveAttribute("aria-invalid", "true");
+    expect(
+      screen.getByRole("button", { name: "Seguir" }),
+    ).toBeDisabled();
+    expect(follow).not.toHaveBeenCalled();
+  });
+
+  it("rejects an invalid API response without changing confirmed state", async () => {
+    const user = userEvent.setup();
+    const service = createService(
+      () => Promise.resolve({ following: true, followerCount: -1 }),
+      () => Promise.resolve({ following: false, followerCount: 2 }),
+      () => Promise.resolve(2),
+    );
+
+    render(
+      <FollowersTemplate
+        creatorId="creator-1"
+        creatorName="Criadora em destaque"
+        service={service}
+      />,
+    );
+
+    await screen.findByText("2 pessoas acompanham esta criadora.");
+    await user.type(
+      screen.getByRole("textbox", { name: "Seu identificador" }),
+      "reader-1",
+    );
+    await user.click(screen.getByRole("button", { name: "Seguir" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "A API retornou uma resposta inválida.",
+    );
+    expect(screen.getByRole("button", { name: "Seguir" })).toBeEnabled();
+    expect(
+      screen.getByText("2 pessoas acompanham esta criadora."),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Agora você acompanha esta criadora."),
     ).not.toBeInTheDocument();
   });
 });
