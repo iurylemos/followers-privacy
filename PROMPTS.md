@@ -44,5 +44,7 @@ deverão atualizar este arquivo e os contratos afetados.
 - Adicionei um design system para o Backend (Layered Architecture)
 - Adicionei um design system para o Frontend (Atomic Design System)
 - Criação do arquivo de tasks separado pro histórias (Para cada janela de contexto)
+- Uso de classes em vez de funções
+- Nomeclatura por arquivo: `backend/src/domain/repositories/followers.repository.ts`
 
 ## O que não verifiquei
