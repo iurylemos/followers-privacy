@@ -13,6 +13,8 @@
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "lint": "eslint .",
+    "start:backend": "npm run dev --workspace backend",
+    "start:frontend": "npm run dev --workspace frontend",
     "test": "npm run test --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present"
   },

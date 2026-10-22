@@ -155,9 +155,12 @@ components:
       type: object
       additionalProperties: false
       required:
-        - followerCount
+        - creatorId
+        - count
       properties:
-        followerCount:
+        creatorId:
+          $ref: '#/components/schemas/Identifier'
+        count:
           type: integer
           minimum: 0
     Error:

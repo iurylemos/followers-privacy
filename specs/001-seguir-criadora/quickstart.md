@@ -1,37 +1,36 @@
 # Quickstart: Seguir Criadora
 
-Este guia descreve como validar o fluxo integrado depois que a implementação do plano estiver
-concluída. Os comandos pressupõem que o repositório disponha dos workspaces e scripts definidos
-no plano.
+Este guia descreve como instalar, executar e validar o fluxo implementado nos workspaces npm
+`backend` e `frontend`.
 
 ## Pré-requisitos
 
-- Node.js LTS indicado no `README.md` do projeto.
-- npm compatível com a versão de Node.js selecionada.
+- Node.js 24.15 ou superior.
+- npm 11 ou compatível com a versão de Node.js selecionada.
 - Portas locais disponíveis para o backend e o frontend.
 
 ## Instalação e execução
 
-Na raiz do repositório:
+Na raiz do repositório, instale as dependências uma vez:
 
 ```powershell
 npm install
 ```
 
-Inicie o backend em um terminal:
+Opcionalmente, copie `.env.example` para `.env` para ajustar a configuração local. Os valores
+padrão são `PORT=3000`, `DATABASE_PATH=./data/followers.sqlite`,
+`ALLOWED_ORIGIN=http://localhost:5173`, `CREATOR_ID=creator-1`,
+`CREATOR_NAME=Criadora em destaque`, `VITE_API_URL=http://localhost:3000`,
+`VITE_CREATOR_ID=creator-1` e `VITE_CREATOR_NAME=Criadora em destaque`.
+
+Inicie cada workspace em um terminal, a partir da raiz:
 
 ```powershell
 npm run dev --workspace backend
 ```
 
-Inicie a interface em outro terminal:
-
-```powershell
-npm run dev --workspace frontend
-```
-
-Abra a URL local exibida pelo Vite. A URL da API, a porta do backend, a origem permitida pelo CORS
-e o caminho do banco SQLite devem seguir os valores documentados no `README.md` e no `.env.example`.
+Abra `http://localhost:5173`. Se alterar a porta/origem do Vite, ajuste também `ALLOWED_ORIGIN`;
+se alterar a porta da API, ajuste `VITE_API_URL`.
 
 ## Verificação da API
 
@@ -44,7 +43,7 @@ Consulte a contagem inicial:
 curl.exe -i http://localhost:3000/creators/creator-1/followers/count
 ```
 
-Resultado esperado: `200` e JSON com `followerCount` igual a zero quando o banco estiver vazio.
+Resultado esperado: `200` e `{"creatorId":"creator-1","count":0}` quando o banco estiver vazio.
 
 Siga como usuário demonstrativo:
 
@@ -54,7 +53,8 @@ curl.exe -i -X POST http://localhost:3000/creators/creator-1/followers `
   -d "{\"userId\":\"user-123\"}"
 ```
 
-Resultado esperado: `201`, `following: true` e contagem aumentada em um.
+Resultado esperado: `201` e JSON com `following: true` e `followerCount` igual a um quando o
+banco estava inicialmente vazio.
 
 Repita a operação. Resultado esperado: `200`, `following: true`, sem duplicidade ou novo aumento.
 
@@ -84,18 +84,23 @@ npm test --workspace backend
 npm test --workspace frontend
 ```
 
-Resultado esperado: todos os testes passam usando dados isolados; os testes de API verificam
-respostas HTTP e estado persistido, e os testes da interface cobrem carregamento, sucesso, erro,
+Resultado esperado: todos os testes passam usando dados isolados. Os testes de API verificam
+respostas HTTP e estado persistido; os testes da interface cobrem carregamento, sucesso, erro,
 teclado e atualização do estado.
+
+Para executar cada suíte separadamente, use `npm test --workspace backend` e
+`npm test --workspace frontend`.
 
 ## Validação integrada no navegador
 
 1. Abra a aplicação e informe `user-123`.
 2. Siga a criadora; aguarde confirmação e confira botão e contagem.
-3. Atualize a página e confirme que o estado foi recuperado da API.
+3. Atualize a página, informe novamente `user-123` e confirme que o estado foi recuperado da API.
 4. Troque o identificador para `user-456` e confirme o estado independente desse usuário.
 5. Deixe de seguir com `user-123`; confira o estado e a contagem.
-6. Repita o fluxo em viewport móvel e opere os controles usando apenas teclado.
+6. Repita o fluxo em viewport de 320 px de largura e opere os controles usando apenas teclado,
+   observando o foco visível.
 
-Resultado esperado: interface e API apresentam o mesmo estado persistido, sem mensagem de sucesso
-antes da confirmação.
+Resultado esperado: interface e API apresentam o mesmo estado persistido após recarga e troca de
+identificador, sem mensagem de sucesso antes da confirmação. O layout permanece utilizável a
+partir de 320 px e os controles podem ser operados por teclado.

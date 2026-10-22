@@ -26,7 +26,7 @@ export default function UserIdInput({
         maxLength={64}
         name="userId"
         onChange={onChange}
-        pattern="[A-Za-z0-9_-]{1,64}"
+        pattern="(?:[A-Za-z0-9_]|-){1,64}"
         placeholder="por exemplo, reader-42"
         required
         value={value}

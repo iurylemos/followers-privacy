@@ -118,7 +118,8 @@ export class FollowersController {
     }
 
     response.status(200).json({
-      followerCount: this.service.getFollowerCount(),
+      creatorId: creatorId.data,
+      count: this.service.getFollowerCount(),
     });
   }
 

@@ -114,6 +114,8 @@ após resposta da API e mensagens em falhas simuladas.
   integridade na persistência.
 - **FR-016**: Os testes MUST verificar contratos HTTP, efeitos persistidos, cenários inválidos,
   operações repetidas, erros relevantes e interações da interface usando dados isolados.
+- **FR-017**: `GET /creators/{creatorId}/followers/count` MUST retornar o ID consultado e a contagem
+  no formato `{ "creatorId": string, "count": number }`.
 
 ### Key Entities
 
